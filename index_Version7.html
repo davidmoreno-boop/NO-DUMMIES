@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NO DUMMIES — Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game">
+    <header class="topbar">
+      <div class="logo">
+        <div class="brain" aria-hidden="true">
+          <!-- Icono de cerebro (SVG) -->
+          <svg width="54" height="54" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
+            <defs>
+              <linearGradient id="bgBrain" x1="0" x2="1">
+                <stop offset="0" stop-color="#7c3aed"/>
+                <stop offset="1" stop-color="#06b6d4"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="10" fill="url(#bgBrain)"/>
+            <g transform="translate(8,10)" fill="#fff" opacity="0.95">
+              <path d="M20 2c-5 0-8 3-8 6 0 2-1 3-3 3-2 0-5 2-5 6 0 5 4 8 10 8h17c6 0 10-3 10-8 0-4-3-6-5-6-2 0-3-1-3-3 0-3-3-6-8-6-3 0-5 1-6 2-1-1-3-2-6-2zM8 22c-1 0-2 .9-2 2v2c0 2 1 3 3 3h2c1 0 2-1 2-2v-3c0-2-1-4-5-4z" />
+              <path d="M34 0c3 0 5 2 5 4 0 2 1 2 3 2 2 0 5 2 5 6 0 5-4 8-10 8H20c-5 0-10-3-10-8 0-4 3-6 5-6 2 0 3 0 3-2 0-2 2-4 5-4 3 0 5 1 6 2 1-1 3-2 6-2z" opacity="0.9"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h1>NO DUMMIES</h1>
+          <span class="subtitle">Cultura General</span>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="score">Puntos: <span id="score">0</span></div>
+        <div class="highscore" title="Récord">Récord: <span id="highscore">0</span></div>
+        <div class="timer" title="Tiempo restante">
+          <div id="timerBar" class="timer-bar"><div id="timerFill" class="timer-fill"></div></div>
+          <div id="timerText" class="timer-text">10s</div>
+        </div>
+        <div class="lives" id="lives" aria-live="polite">
+          <button class="heart" data-index="0" aria-hidden="true"></button>
+          <button class="heart" data-index="1" aria-hidden="true"></button>
+          <button class="heart" data-index="2" aria-hidden="true"></button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Pantalla / tarjeta de juego -->
+    <section class="card" id="card" role="region" aria-labelledby="question">
+      <div class="qheader">
+        <div class="qcount" id="qcount">Selecciona nivel para empezar</div>
+        <div class="difficulty" id="difficulty"></div>
+      </div>
+      <h2 id="question" class="question">Bienvenido a NO DUMMIES</h2>
+
+      <div class="options" id="options" role="list">
+        <!-- Buttons generadas por JS -->
+      </div>
+
+      <div class="controls">
+        <div id="deltaFeedback" class="delta hidden"></div>
+        <button id="nextBtn" class="next hidden" aria-hidden="true">Siguiente ➜</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <small>Hecho con ❤️ — Puedes volver a jugar cuando pierdas todas las vidas</small>
+    </footer>
+  </main>
+
+  <!-- Overlay de selección de nivel -->
+  <div id="levelOverlay" class="level-overlay">
+    <div class="level-card" role="dialog" aria-modal="true" aria-labelledby="levelTitle">
+      <h2 id="levelTitle">Elige un nivel</h2>
+      <p class="level-sub">Fácil: preguntas sencillas — Difícil: más complejas — Extremo: muy avanzadas</p>
+      <div class="level-buttons">
+        <button class="level-btn" data-level="facil">Fácil</button>
+        <button class="level-btn" data-level="dificil">Difícil</button>
+        <button class="level-btn" data-level="extremo">Extremo</button>
+      </div>
+      <small class="level-hint">Cada nivel tiene 20 preguntas. Si respondes correctamente a las 20, recibirás una medalla. Tienes 10s por pregunta; cuanto más tardes, menos puntos obtendrás.</small>
+    </div>
+  </div>
+
+  <!-- Modal Game Over -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <h3 id="modalTitle">¡Se acabaron las vidas!</h3>
+      <p>Tu puntuación: <strong id="finalScore">0</strong></p>
+      <p id="modalRecord" class="muted"></p>
+      <div class="modal-actions">
+        <button id="restartBtn" class="btn primary">Volver a jugar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Medalla (nivel superado) -->
+  <div id="medalModal" class="medal-modal hidden" role="dialog" aria-modal="true" aria-labelledby="medalTitle">
+    <div class="medal-content">
+      <div class="medal-graphic" aria-hidden="true">
+        <!-- SVG medalla -->
+        <svg width="120" height="140" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="mgrad" x1="0" x2="1">
+              <stop offset="0" stop-color="#FFD166"/>
+              <stop offset="1" stop-color="#F59E0B"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="46" r="34" fill="url(#mgrad)"/>
+          <path d="M60 26v40" stroke="#b06a00" stroke-width="3" stroke-linecap="round"/>
+          <rect x="46" y="70" width="28" height="50" rx="8" fill="#7c3aed" transform="rotate(-8 46 70)"/>
+          <rect x="46" y="70" width="28" height="50" rx="8" fill="#06b6d4" transform="rotate(8 46 70)" opacity="0.9"/>
+        </svg>
+      </div>
+      <h3 id="medalTitle">¡Nivel superado!</h3>
+      <p id="medalText">Has respondido correctamente a todas las preguntas del nivel <strong id="medalLevelLabel"></strong>.</p>
+      <p id="medalRecord" class="muted"></p>
+      <div class="medal-actions">
+        <button id="playSameBtn" class="btn">Jugar mismo nivel</button>
+        <button id="chooseLevelBtn" class="btn primary">Elegir otro nivel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
